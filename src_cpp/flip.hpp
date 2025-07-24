@@ -7,6 +7,7 @@
 #include <cmath>
 #include <random>
 #include <chrono>
+#include <iostream>
 
 #include "bp.hpp"
 #include "rng.hpp"
@@ -66,12 +67,40 @@ public:
         this->syndrome = synd;
 
         int syndrome_hamming_weight = 0;
-        for (auto bit : this->syndrome) { {
+        for (auto bit : this->syndrome) { 
             syndrome_hamming_weight += bit;
-}
-}
+        }
 
+
+        int prev_weight = 9999;
+        int same_weight_count = 0;
         for(int iter = 1; iter<=this->max_iter; iter++){
+
+            if (prev_weight == syndrome_hamming_weight) 
+            {
+                if (++same_weight_count >= 6) 
+                {
+                    // std::cout << "###DBG " << iter << " cycle" << std::endl;
+                    this->converge = 0;
+                    this->iterations = iter;
+                    return this->decoding;
+                }
+            } 
+            else 
+            {
+                same_weight_count = 0;
+            }
+            prev_weight = syndrome_hamming_weight;
+
+            if (syndrome_hamming_weight == 0)
+            {
+                if (iter > 1) {
+                    // std::cout << "###DBG " << iter << " converged" << std::endl;
+                }
+                this->converge = 1;
+                this->iterations = iter;
+                return this->decoding;
+            }
 
             for (int bit_idx = 0; bit_idx < this->bit_count; bit_idx++)
             {
@@ -121,18 +150,6 @@ public:
                         }
                     }
                 }
-                else
-                {
-                    continue;
-                }
-
-                if (syndrome_hamming_weight == 0)
-                {
-                    this->converge = 1;
-                    this->iterations = iter;
-                    return this->decoding;
-                }
-
             }
         }
 
