@@ -78,7 +78,7 @@ public:
 
             if (prev_weight == syndrome_hamming_weight) 
             {
-                if (++same_weight_count >= 6) 
+                if (++same_weight_count >= 20) 
                 {
                     // std::cout << "###DBG " << iter << " cycle" << std::endl;
                     this->converge = 0;

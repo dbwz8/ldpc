@@ -28,6 +28,9 @@ cdef class BpFlipDecoder(BpDecoderBase):
    
         cdef i
 
+        if not len(syndrome) == self.m:
+            raise ValueError(f"The syndrome must have length {self.m}. Not {len(syndrome)}.")
+        
         zero_syndrome = True
         
         for i in range(self.m):
@@ -38,20 +41,31 @@ cdef class BpFlipDecoder(BpDecoderBase):
             self.bpd.converge = True
             return np.zeros(self.n, dtype=syndrome.dtype)
         
-        bpd_decoding = self.bpd.decode(self._syndrome)
-        bpd_syndrome = self.pcm.mulvec(self.bpd.decoding)
-
         out = np.zeros(self.n, dtype=syndrome.dtype)
-        if self.bpd.converge:
+        self.flipD.decode(self._syndrome)
+        if self.flipD.converge:
             for i in range(self.n):
-                out[i] = bpd_decoding[i]
-        else:
-            flip_decoding = self.flipD.decode(bpd_syndrome)
-            for i in range(self.n):
-                out[i] = flip_decoding[i]
+                out[i] = self.flipD.decoding[i]
+            return out
+
+        # cdef vector[uint8_t] flip_syndrome = self.pcm.mulvec(self.flipD.decoding)
+        
+        #for i in range(self.pcm.m):
+        #   self._syndrome[i] ^= flip_syndrome[i]
+
+        self.bpd.decode(self._syndrome)
+        
+        for i in range(self.n):
+            #out[i] = self.bpd.decoding[i] ^ self.flipD.decoding[i]
+            out[i] = self.bpd.decoding[i]
+
         return out
 
-   
+
+
+    @property
+    def converge(self) -> int:
+        return self.converge
 
     @property
     def decoding(self) -> np.ndarray:
