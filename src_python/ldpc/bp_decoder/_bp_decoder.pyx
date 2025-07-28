@@ -676,6 +676,19 @@ cdef class BpDecoder(BpDecoderBase):
             out[i] = self.bpd.decoding[i]
         return out
 
+    @property
+    def flip_count(self) -> np.ndarray:
+        """
+        Returns the current oscillation flip count
+
+        Returns:
+            np.ndarray: A numpy array containing the current oscillation flip count
+        """
+        out = np.zeros(self.m).astype(int)
+        for i in range(self.m):
+            out[i] = self.bpd.flip_count[i]
+        return out
+
 
 cdef class SoftInfoBpDecoder(BpDecoderBase):
     """
