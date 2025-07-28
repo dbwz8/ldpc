@@ -9,10 +9,7 @@ class BpFlipDecoder(BpDecoderBase): ...
 
     def decode(self, syndrome: np.ndarray) -> np.ndarray: ...
 
-
-
-    @property
-    def converge(self) -> int: ...
+   
 
     @property
     def decoding(self) -> np.ndarray:

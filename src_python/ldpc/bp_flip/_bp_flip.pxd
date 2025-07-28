@@ -13,7 +13,6 @@ cdef extern from "flip.hpp" namespace "ldpc::flip" nogil:
         FlipDecoderCpp(BpSparse& pcm, int max_iter, int pfreq, int seed) except +
         vector[uint8_t]& decode(vector[uint8_t]& syndrome)
         vector[uint8_t] decoding
-        bool converge
         
 
 cdef class BpFlipDecoder(BpDecoderBase):

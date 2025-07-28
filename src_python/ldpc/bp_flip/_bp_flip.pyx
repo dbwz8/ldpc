@@ -51,6 +51,8 @@ cdef class BpFlipDecoder(BpDecoderBase):
                 out[i] = flip_decoding[i]
         return out
 
+   
+
     @property
     def decoding(self) -> np.ndarray:
         """
