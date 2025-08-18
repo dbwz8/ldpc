@@ -1,6 +1,8 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, initializedcheck=False, cdivision=True, embedsignature=True
 # distutils: language = c++
+from libc.stdio cimport printf
 import numpy as np
+import sys
 import warnings
 from scipy.sparse import spmatrix
 from typing import Union, List, Optional
@@ -27,8 +29,8 @@ cdef class BpFlipDecoder(BpDecoderBase):
     def decode(self, syndrome: np.ndarray) -> np.ndarray:
    
         cdef i
-
         zero_syndrome = True
+        out = np.zeros(self.n, dtype=syndrome.dtype)
         
         for i in range(self.m):
             self._syndrome[i] = syndrome[i]
@@ -36,22 +38,21 @@ cdef class BpFlipDecoder(BpDecoderBase):
                 zero_syndrome = False
         if zero_syndrome:
             self.bpd.converge = True
-            return np.zeros(self.n, dtype=syndrome.dtype)
+            return out
         
         bpd_decoding = self.bpd.decode(self._syndrome)
-        bpd_syndrome = self.pcm.mulvec(self.bpd.decoding)
-
-        out = np.zeros(self.n, dtype=syndrome.dtype)
         if self.bpd.converge:
             for i in range(self.n):
                 out[i] = bpd_decoding[i]
         else:
-            flip_decoding = self.flipD.decode(bpd_syndrome)
+            bpd_syndrome = self.pcm.mulvec(bpd_decoding)
+            tmp_syndrome = np.zeros(self.m, dtype=syndrome.dtype)
+            for i in range(self.m):
+                tmp_syndrome[i] = syndrome[i] ^ bpd_syndrome[i]
+            flip_decoding = self.flipD.decode(tmp_syndrome)
             for i in range(self.n):
-                out[i] = flip_decoding[i]
+                out[i] = 0 ###DBG flip_decoding[i] ^ bpd_decoding[i]
         return out
-
-   
 
     @property
     def decoding(self) -> np.ndarray:
@@ -63,7 +64,7 @@ cdef class BpFlipDecoder(BpDecoderBase):
         """
         out = np.zeros(self.n).astype(int)
         for i in range(self.n):
-            out[i] = self.osD.osdw_decoding[i]
+            out[i] = self.flipD.decoding[i]
         return out
 
     
