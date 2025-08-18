@@ -51,7 +51,7 @@ cdef class BpFlipDecoder(BpDecoderBase):
                 tmp_syndrome[i] = syndrome[i] ^ bpd_syndrome[i]
             flip_decoding = self.flipD.decode(tmp_syndrome)
             for i in range(self.n):
-                out[i] = 0 ###DBG flip_decoding[i] ^ bpd_decoding[i]
+                out[i] = flip_decoding[i] ^ bpd_decoding[i]
         return out
 
     @property
