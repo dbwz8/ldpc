@@ -76,17 +76,17 @@ public:
         int same_weight_count = 0;
         for(int iter = 1; iter<=this->max_iter; iter++){
 
-            if (iter > 1 && syndrome_hamming_weight < prev_weight) {
+            /*if (iter > 1 && syndrome_hamming_weight < prev_weight) {
                     std::cout << "###DBG " << iter << " better " << 
                         syndrome_hamming_weight << " < " <<  prev_weight <<
                         std::endl;
-            }
+            }*/
 
             if (syndrome_hamming_weight == 0)
             {
-                if (iter > 1) {
+                /*if (iter > 1) {
                     std::cout << "###DBG " << iter << " converged" << std::endl;
-                }
+                }*/
                 this->converge = 1;
                 this->iterations = iter;
                 return this->decoding;
@@ -94,9 +94,9 @@ public:
 
             if (prev_weight == syndrome_hamming_weight) 
             {
-                if (++same_weight_count >= 99999) 
+                if (++same_weight_count >= 300) 
                 {
-                    std::cout << "###DBG " << iter << " cycle" << std::endl;
+                    //std::cout << "###DBG " << iter << " cycle" << std::endl;
                     this->converge = 0;
                     this->iterations = iter;
                     return this->decoding;
@@ -160,7 +160,7 @@ public:
             }
         }
 
-        std::cout << "###DBG " << this->max_iter << " failed to converge" << std::endl;
+        //std::cout << "###DBG " << this->max_iter << " failed to converge" << std::endl;
         this->converge = 0;
         this->iterations = max_iter;
         return this->decoding;
