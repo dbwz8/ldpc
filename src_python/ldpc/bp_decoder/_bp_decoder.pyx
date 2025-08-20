@@ -677,18 +677,18 @@ cdef class BpDecoder(BpDecoderBase):
         return out
 
     @property
-    def decodings(self) -> np.ndarray: ### DBW: Added for decoding tracing
+    def history(self) -> np.ndarray: ### DBW: Added for decoding tracing
         """
-        Returns the trace of decodings
+        Returns the trace of decodings as log prob ratio
 
         Returns:
             np.ndarray: A numpy array containing the trace of decodings
         """
         rows = self.bpd.iterations
-        out = np.zeros((rows,self.n),dtype=np.uint8)
+        out = np.zeros((rows,self.n),dtype=np.int8)
         for i in range(rows):
             for j in range(self.m):
-                out[i,j] = self.bpd.decodings[i][j]
+                out[i,j] = self.bpd.history[i][j]
         return out
     
 
@@ -792,17 +792,17 @@ cdef class SoftInfoBpDecoder(BpDecoderBase):
         return out
 
     @property
-    def decodings(self) -> np.ndarray: ### DBW: Added for decoding tracing
+    def history(self) -> np.ndarray: ### DBW: Added for decoding tracing
         """
-        Returns the trace of decodings
+        Returns the trace of decodings as log prob ratio
 
         Returns:
             np.ndarray: A numpy array containing the trace of decodings
         """
         rows = self.bpd.iterations
-        out = np.zeros((rows,self.n),dtype=np.uint8)
+        out = np.zeros((rows,self.n),dtype=np.int8)
         for i in range(rows):
             for j in range(self.m):
-                out[i,j] = self.bpd.decodings[i][j]
+                out[i,j] = self.bpd.history[i][j]
         return out
     

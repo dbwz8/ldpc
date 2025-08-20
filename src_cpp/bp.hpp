@@ -62,7 +62,7 @@ namespace ldpc {
             double ms_scaling_factor;
             std::vector<uint8_t> decoding;
             std::vector<uint8_t> candidate_syndrome;
-            std::vector<std::vector<uint8_t>> decodings;             // ###DBW: Keeping trace
+            std::vector<std::vector<int8_t>> history;             // ###DBW: Keeping trace
 
             std::vector<double> log_prob_ratios;
             std::vector<double> initial_log_prob_ratios;
@@ -183,8 +183,8 @@ namespace ldpc {
 
                 this->initialise_log_domain_bp();
 
-                // ###DBW: Keep track of decodings across all iterations
-                this->decodings.clear();
+                // ###DBW: Keep track of history across all iterations
+                this->history.clear();
 
                 //main interation loop
                 for (int it = 1; it <= this->maximum_iterations; it++) {
@@ -289,7 +289,15 @@ namespace ldpc {
                     }
 
                     // ###DBW: Update decoding trace
-                    this->decodings.push_back(this->decoding);
+                    std::vector<int8_t> history;
+                    history.resize(this->bit_count);
+                    for (int i =0; i< this->bit_count; i++) {
+                       double v = this->log_prob_ratios[i];
+                       if (v < -127.0) v = -127.0;
+                       else if (v > 127.0) v = 127.0;
+                       history[i] =  int8_t(v);
+                    }
+                    this->history.push_back(history);
                     
                     if (std::equal(candidate_syndrome.begin(), candidate_syndrome.end(), syndrome.begin())) {
                         this->converge = true;
@@ -326,8 +334,8 @@ namespace ldpc {
                 std::vector<double> log_prob_ratios_old;
                 log_prob_ratios_old.resize(bit_count);
 
-                // ###DBW: Keep track of decodings across all iterations
-                this->decodings.clear();
+                // ###DBW: Keep track of history across all iterations
+                this->history.clear();
 
                 for (int i = 0; i < bit_count; i++) {
                     this->initial_log_prob_ratios[i] = std::log(
@@ -427,6 +435,15 @@ namespace ldpc {
                     CONVERGED = 0;
 
                     // ###DBW: Update decoding trace
+                    std::vector<int8_t> history;
+                    history.resize(this->bit_count);
+                    for (int i =0; i< this->bit_count; i++) {
+                       double v = this->log_prob_ratios[i];
+                       if (v < -127.0) v = -127.0;
+                       else if (v > 127.0) v = 127.0;
+                       history[i] =  int8_t(v);
+                    }
+                    this->history.push_back(history);
                     this->decodings.push_back(this->decoding);
                     
                     if (std::equal(candidate_syndrome.begin(), candidate_syndrome.end(), syndrome.begin())) {

@@ -349,9 +349,9 @@ class BpDecoder(BpDecoderBase):
         """
 
     @property
-    def decodings(self) -> np.ndarray: ### DBW: Added for decoding tracing
+    def history(self) -> np.ndarray: ### DBW: Added for decoding tracing
         """
-        Returns the trace of decodings
+        Returns the trace of decodings as log prob ratio
 
         Returns: ...
     
@@ -423,8 +423,8 @@ class SoftInfoBpDecoder(BpDecoderBase):
         """
 
     @property
-    def decodings(self) -> np.ndarray: ### DBW: Added for decoding tracing
+    def history(self) -> np.ndarray: ### DBW: Added for decoding tracing
         """
-        Returns the trace of decodings
+        Returns the trace of decodings as log prob ratio
 
         Returns: ...

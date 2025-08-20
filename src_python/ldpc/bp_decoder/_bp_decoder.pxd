@@ -5,6 +5,7 @@ from libcpp cimport bool
 from libcpp.vector cimport vector
 cimport numpy as np
 ctypedef np.uint8_t uint8_t
+ctypedef np.int8_t int8_t
 
 cdef extern from "bp.hpp" namespace "ldpc::bp":
     
@@ -67,7 +68,7 @@ cdef extern from "bp.hpp" namespace "ldpc::bp":
             double ms_scaling_factor
             vector[uint8_t] decoding
             vector[uint8_t] candidate_syndrome
-            vector[vector[uint8_t]] decodings
+            vector[vector[int8_t]] history
             vector[double] log_prob_ratios
             vector[double] initial_log_prob_ratios
             vector[double] soft_syndrome
