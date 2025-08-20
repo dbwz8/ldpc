@@ -677,16 +677,18 @@ cdef class BpDecoder(BpDecoderBase):
         return out
 
     @property
-    def flip_count(self) -> np.ndarray: ### DBW: Added for oscillation counting
+    def decodings(self) -> np.ndarray: ### DBW: Added for decoding tracing
         """
-        Returns the current oscillation flip count
+        Returns the trace of decodings
 
         Returns:
-            np.ndarray: A numpy array containing the current oscillation flip count
+            np.ndarray: A numpy array containing the trace of decodings
         """
-        out = np.zeros(self.m).astype(int)
-        for i in range(self.m):
-            out[i] = self.bpd.flip_count[i]
+        rows = self.bpd.iterations
+        out = np.zeros((rows,self.n),dtype=np.uint8)
+        for i in range(rows):
+            for j in range(self.m):
+                out[i,j] = self.bpd.decodings[i][j]
         return out
     
 
@@ -790,15 +792,17 @@ cdef class SoftInfoBpDecoder(BpDecoderBase):
         return out
 
     @property
-    def flip_count(self) -> np.ndarray: ### DBW: Added for oscillation counting
+    def decodings(self) -> np.ndarray: ### DBW: Added for decoding tracing
         """
-        Returns the current oscillation flip count
+        Returns the trace of decodings
 
         Returns:
-            np.ndarray: A numpy array containing the current oscillation flip count
+            np.ndarray: A numpy array containing the trace of decodings
         """
-        out = np.zeros(self.m).astype(int)
-        for i in range(self.m):
-            out[i] = self.bpd.flip_count[i]
+        rows = self.bpd.iterations
+        out = np.zeros((rows,self.n),dtype=np.uint8)
+        for i in range(rows):
+            for j in range(self.m):
+                out[i,j] = self.bpd.decodings[i][j]
         return out
     

@@ -62,8 +62,7 @@ namespace ldpc {
             double ms_scaling_factor;
             std::vector<uint8_t> decoding;
             std::vector<uint8_t> candidate_syndrome;
-            std::vector<uint8_t> prev_candidate_syndrome;   //###DBW: Adding flip stats
-            std::vector<int> flip_count;                    // ###DBW: Adding flip stats
+            std::vector<std::vector<uint8_t>> decodings;             // ###DBW: Keeping trace
 
             std::vector<double> log_prob_ratios;
             std::vector<double> initial_log_prob_ratios;
@@ -97,8 +96,6 @@ namespace ldpc {
                 this->initial_log_prob_ratios.resize(bit_count);
                 this->log_prob_ratios.resize(bit_count);
                 this->candidate_syndrome.resize(check_count);
-                this->prev_candidate_syndrome.resize(check_count);  //###DBW: Set correct size for flip stats
-                this->flip_count.resize(check_count);               //###DBW: Set correct size for flip stats
                 this->decoding.resize(bit_count);
                 this->converge = 0;
                 this->omp_thread_count = omp_threads;
@@ -186,15 +183,11 @@ namespace ldpc {
 
                 this->initialise_log_domain_bp();
 
-                // ###DBW: Keep track of number of bit-flips across all iterations
-                this->flip_count.assign(this->check_count,0);
-                this->candidate_syndrome.assign(this->check_count,0);
+                // ###DBW: Keep track of decodings across all iterations
+                this->decodings.clear();
 
                 //main interation loop
                 for (int it = 1; it <= this->maximum_iterations; it++) {
-
-                    // ###DBW: Save away the previous candidate to detect oscillations
-                    this->prev_candidate_syndrome = this->candidate_syndrome;
 
                     if (this->bp_method == PRODUCT_SUM) {
                         for (int i = 0; i < this->check_count; i++) {
@@ -295,12 +288,8 @@ namespace ldpc {
                         }
                     }
 
-                    // ###DBW: Update oscillation statistics
-                    for (int i = 0; i < this->check_count; i++) {
-                        if (this->candidate_syndrome[i] != this->prev_candidate_syndrome[i]) {
-                            this->flip_count[i]++;
-                        }
-                    }
+                    // ###DBW: Update decoding trace
+                    this->decodings.push_back(this->decoding);
                     
                     if (std::equal(candidate_syndrome.begin(), candidate_syndrome.end(), syndrome.begin())) {
                         this->converge = true;
@@ -337,6 +326,9 @@ namespace ldpc {
                 std::vector<double> log_prob_ratios_old;
                 log_prob_ratios_old.resize(bit_count);
 
+                // ###DBW: Keep track of decodings across all iterations
+                this->decodings.clear();
+
                 for (int i = 0; i < bit_count; i++) {
                     this->initial_log_prob_ratios[i] = std::log(
                             (1 - this->channel_probabilities[i]) / this->channel_probabilities[i]);
@@ -346,19 +338,12 @@ namespace ldpc {
 
                 // initialise_log_domain_bp();
 
-                // ###DBW: Keep track of number of bit-flips across all iterations
-                this->flip_count.assign(this->check_count,0);
-                this->candidate_syndrome.assign(this->check_count,0);
-
                 //main interation loop
                 for (int it = 1; it <= maximum_iterations; it++) {
 
                     if (CONVERGED != 0) {
                         continue;
                     }
-
-                    // ###DBW: Save away the previous candidate to detect oscillations
-                    this->prev_candidate_syndrome = this->candidate_syndrome;
 
                     // std::fill(candidate_syndrome.begin(), candidate_syndrome.end(), 0);
 
@@ -441,12 +426,8 @@ namespace ldpc {
                     int loop_break = 0;
                     CONVERGED = 0;
 
-                    // ###DBW: Update oscillation statistics
-                    for (int i = 0; i < this->check_count; i++) {
-                        if (this->candidate_syndrome[i] != this->prev_candidate_syndrome[i]) {
-                            this->flip_count[i]++;
-                        }
-                    }
+                    // ###DBW: Update decoding trace
+                    this->decodings.push_back(this->decoding);
                     
                     if (std::equal(candidate_syndrome.begin(), candidate_syndrome.end(), syndrome.begin())) {
                         CONVERGED = 1;

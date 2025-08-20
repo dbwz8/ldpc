@@ -67,8 +67,7 @@ cdef extern from "bp.hpp" namespace "ldpc::bp":
             double ms_scaling_factor
             vector[uint8_t] decoding
             vector[uint8_t] candidate_syndrome
-            vector[uint8_t] prev_candidate_syndrome     ###DBW: Adding flip stats
-            vector[int] flip_count                      ###DBW: Adding flip stats
+            vector[vector[uint8_t]] decodings
             vector[double] log_prob_ratios
             vector[double] initial_log_prob_ratios
             vector[double] soft_syndrome

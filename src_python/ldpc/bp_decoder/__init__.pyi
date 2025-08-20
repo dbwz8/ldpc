@@ -349,9 +349,9 @@ class BpDecoder(BpDecoderBase):
         """
 
     @property
-    def flip_count(self) -> np.ndarray: ### DBW: Added for oscillation counting
+    def decodings(self) -> np.ndarray: ### DBW: Added for decoding tracing
         """
-        Returns the current oscillation flip count
+        Returns the trace of decodings
 
         Returns: ...
     
@@ -423,8 +423,8 @@ class SoftInfoBpDecoder(BpDecoderBase):
         """
 
     @property
-    def flip_count(self) -> np.ndarray: ### DBW: Added for oscillation counting
+    def decodings(self) -> np.ndarray: ### DBW: Added for decoding tracing
         """
-        Returns the current oscillation flip count
+        Returns the trace of decodings
 
         Returns: ...
