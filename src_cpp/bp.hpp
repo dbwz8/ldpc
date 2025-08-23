@@ -444,7 +444,6 @@ namespace ldpc {
                        history[i] =  int8_t(v);
                     }
                     this->history.push_back(history);
-                    this->decodings.push_back(this->decoding);
                     
                     if (std::equal(candidate_syndrome.begin(), candidate_syndrome.end(), syndrome.begin())) {
                         CONVERGED = 1;
